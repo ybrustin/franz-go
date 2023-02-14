@@ -1,6 +1,7 @@
 package kfake
 
 import (
+	"sync"
 	"time"
 
 	"github.com/twmb/franz-go/pkg/kerr"
@@ -187,13 +188,16 @@ type watchFetch struct {
 	cb func()
 	t  *time.Timer
 
+	once    sync.Once
 	cleaned bool
 }
 
 func (w *watchFetch) push(nbytes int) {
 	w.need -= nbytes
 	if w.need <= 0 {
-		go w.cb()
+		w.once.Do(func() {
+			go w.cb()
+		})
 	}
 }
 
