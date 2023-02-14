@@ -11,7 +11,9 @@ import (
 )
 
 func main() {
-	c, err := kfake.NewCluster()
+	c, err := kfake.NewCluster(
+		kfake.Ports(9092),
+	)
 	if err != nil {
 		panic(err)
 	}

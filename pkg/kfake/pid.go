@@ -19,7 +19,7 @@ type (
 	pidMap struct {
 		id    int64
 		epoch int16
-		m     map[string]map[int32]*pidseqs
+		tps   tps[pidseqs]
 	}
 
 	pid struct {
@@ -41,20 +41,7 @@ func (pids *pids) get(id int64, epoch int16, t string, p int32) (*pidseqs, int16
 	if pm == nil {
 		return nil, 0
 	}
-	if pm.m == nil {
-		pm.m = make(map[string]map[int32]*pidseqs)
-	}
-	ps := pm.m[t]
-	if ps == nil {
-		ps = make(map[int32]*pidseqs)
-		pm.m[t] = ps
-	}
-	seqs := ps[p]
-	if seqs == nil {
-		seqs = new(pidseqs)
-		ps[p] = seqs
-	}
-	return seqs, pm.epoch
+	return pm.tps.mkpDefault(t, p), pm.epoch
 }
 
 func (pids *pids) create(txnalID *string) pid {

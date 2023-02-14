@@ -41,7 +41,7 @@ func (c *Cluster) handleListOffsets(b *broker, kreq kmsg.Request) (kmsg.Response
 	}
 
 	for _, rt := range req.Topics {
-		ps, ok := c.data.m[rt.Topic]
+		ps, ok := c.data.tps.gett(rt.Topic)
 		for _, rp := range rt.Partitions {
 			if !ok {
 				donep(rt.Topic, rp.Partition, kerr.UnknownTopicOrPartition.Code)

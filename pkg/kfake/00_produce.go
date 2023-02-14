@@ -11,6 +11,7 @@ import (
 // TODO
 // * Leaders
 // * Support txns
+// * Multiple batches in one produce
 
 func init() { regKey(0, 3, 9) }
 
@@ -68,7 +69,7 @@ func (c *Cluster) handleProduce(b *broker, kreq kmsg.Request) (kmsg.Response, er
 	now := time.Now().UnixMilli()
 	for _, rt := range req.Topics {
 		for _, rp := range rt.Partitions {
-			pd, ok := c.data.getp(rt.Topic, rp.Partition)
+			pd, ok := c.data.tps.getp(rt.Topic, rp.Partition)
 			if !ok {
 				donep(rt.Topic, rp, kerr.UnknownTopicOrPartition.Code)
 				continue
@@ -144,7 +145,7 @@ func (c *Cluster) handleProduce(b *broker, kreq kmsg.Request) (kmsg.Response, er
 			}
 			baseOffset := pd.highWatermark
 			lso := pd.logStartOffset
-			pd.pushBatch(b)
+			pd.pushBatch(len(rp.Records), b)
 			sp := donep(rt.Topic, rp, 0)
 			sp.BaseOffset = baseOffset
 			sp.LogAppendTime = logAppendTime

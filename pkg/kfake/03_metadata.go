@@ -76,14 +76,14 @@ func (c *Cluster) handleMetadata(kreq kmsg.Request) (kmsg.Response, error) {
 			topic = *rt.Topic
 		}
 
-		ps, ok := c.data.m[topic]
+		ps, ok := c.data.tps.gett(topic)
 		if !ok {
 			if !allowAuto {
 				donet(topic, rt.TopicID, kerr.UnknownTopicOrPartition.Code)
 				continue
 			}
 			c.data.mkt(topic, -1)
-			ps = c.data.m[topic]
+			ps, _ = c.data.tps.gett(topic)
 		}
 
 		id := c.data.t2id[topic]
@@ -95,8 +95,8 @@ func (c *Cluster) handleMetadata(kreq kmsg.Request) (kmsg.Response, error) {
 			sp.ISR = []int32{sp.Leader}
 		}
 	}
-	if req.Topics == nil {
-		for topic, ps := range c.data.m {
+	if req.Topics == nil && c.data.tps != nil {
+		for topic, ps := range c.data.tps {
 			id := c.data.t2id[topic]
 			for p, pd := range ps {
 				sp := donep(topic, id, p, 0)

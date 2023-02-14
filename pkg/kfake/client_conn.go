@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 	"net"
+	"time"
 
 	"github.com/twmb/franz-go/pkg/kbin"
 	"github.com/twmb/franz-go/pkg/kmsg"
@@ -76,7 +77,7 @@ func (cc *clientConn) read() {
 		}
 
 		select {
-		case cc.c.reqCh <- clientReq{cc, kreq}:
+		case cc.c.reqCh <- clientReq{cc, kreq, time.Now()}:
 		case <-cc.c.die:
 			return
 		}

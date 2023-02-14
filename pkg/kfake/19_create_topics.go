@@ -47,7 +47,7 @@ func (c *Cluster) handleCreateTopics(b *broker, kreq kmsg.Request) (kmsg.Respons
 	}
 
 	for _, rt := range req.Topics {
-		if _, ok := c.data.m[rt.Topic]; ok {
+		if _, ok := c.data.tps.gett(rt.Topic); ok {
 			donet(rt.Topic, kerr.TopicAlreadyExists.Code)
 			continue
 		}
@@ -58,7 +58,7 @@ func (c *Cluster) handleCreateTopics(b *broker, kreq kmsg.Request) (kmsg.Respons
 		c.data.mkt(rt.Topic, int(rt.NumPartitions))
 		st := donet(rt.Topic, 0)
 		st.TopicID = c.data.t2id[rt.Topic]
-		st.NumPartitions = int32(len(c.data.m[rt.Topic]))
+		st.NumPartitions = int32(len(c.data.tps[rt.Topic]))
 		st.ReplicationFactor = rt.ReplicationFactor
 	}
 

@@ -11,6 +11,7 @@ func (opt opt) apply(cfg *cfg) { opt.fn(cfg) }
 
 type cfg struct {
 	nbrokers        int
+	ports           []int
 	logger          Logger
 	clusterID       string
 	allowAutoTopic  bool
@@ -20,6 +21,12 @@ type cfg struct {
 // NumBrokers sets the number of brokers to start in the fake cluster.
 func NumBrokers(n int) Opt {
 	return opt{func(cfg *cfg) { cfg.nbrokers = n }}
+}
+
+// Ports sets the ports to listen on, overriding randomly choosing NumBrokers
+// amount of ports.
+func Ports(ports ...int) Opt {
+	return opt{func(cfg *cfg) { cfg.ports = ports }}
 }
 
 // WithLogger sets the logger to use.
