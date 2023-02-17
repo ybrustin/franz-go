@@ -70,17 +70,16 @@ func (d *data) mkt(t string, nparts int) {
 	}
 	d.id2t[id] = t
 	d.t2id[t] = id
-	leaderAt := rand.Uint64()
 	for i := 0; i < nparts; i++ {
-		leader := d.c.bs[leaderAt%uint64(len(d.c.bs))]
-		leaderAt++
-		d.tps.mkp(t, int32(i), func() *partData {
-			return &partData{
-				leader:    leader,
-				watch:     make(map[*watchFetch]struct{}),
-				createdAt: time.Now(),
-			}
-		})
+		d.tps.mkp(t, int32(i), d.c.newPartData)
+	}
+}
+
+func (c *Cluster) newPartData() *partData {
+	return &partData{
+		leader:    c.bs[rand.Uint64()%uint64(len(c.bs))],
+		watch:     make(map[*watchFetch]struct{}),
+		createdAt: time.Now(),
 	}
 }
 

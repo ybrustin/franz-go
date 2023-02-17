@@ -201,6 +201,12 @@ func (w *watchFetch) push(nbytes int) {
 	}
 }
 
+func (w *watchFetch) deleted() {
+	w.once.Do(func() {
+		go w.cb()
+	})
+}
+
 func (w *watchFetch) cleanup(c *Cluster) {
 	w.cleaned = true
 	for _, in := range w.in {

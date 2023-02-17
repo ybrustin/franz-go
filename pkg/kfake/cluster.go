@@ -195,8 +195,12 @@ func (c *Cluster) run() {
 			kresp, err = c.handleApiVersions(kreq)
 		case kmsg.CreateTopics:
 			kresp, err = c.handleCreateTopics(creq.cc.b, kreq)
+		case kmsg.DeleteTopics:
+			kresp, err = c.handleDeleteTopics(creq.cc.b, kreq)
 		case kmsg.InitProducerID:
 			kresp, err = c.handleInitProducerID(kreq)
+		case kmsg.CreatePartitions:
+			kresp, err = c.handleCreatePartitions(creq.cc.b, kreq)
 		default:
 			err = fmt.Errorf("unahndled key %v", k)
 		}

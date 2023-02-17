@@ -12,7 +12,7 @@ import (
 
 func main() {
 	c, err := kfake.NewCluster(
-		kfake.Ports(9092),
+		kfake.Ports(9092, 9093, 9094),
 	)
 	if err != nil {
 		panic(err)
